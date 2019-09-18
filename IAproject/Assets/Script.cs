@@ -6,10 +6,11 @@ using UnityEditor;
 public class Script : MonoBehaviour
 {
     public GameObject SpriteVertices;
-    public enum Telas { Menu, Grade, Arestas, Rota, IA }
+    public enum Telas { Menu, Grade, Arestas, Rota, IA,Fim }
     public Telas telas;
     private GameObject Vertice1, Vertice2, HoldVertice;
     public GameObject PontoChegada, PontoPartida;
+    public GameObject ScrollBar,Criando, Solucao;
     private GameObject[] Grafo = new GameObject[36];
     private GameObject[] Caminho = new GameObject[36];
     private Vector3[] Estradas = new Vector3[36];
@@ -20,7 +21,8 @@ public class Script : MonoBehaviour
     public int NumeroColunas;
     private string[] Nomes = { "PontoA", "PontoB", "PontoC", "PontoD", "PontoE", "PontoF", "PontoG", "PontoH", "PontoI", "PontoJ", "PontoK", "PontoL", "PontoM", "PontoN", "PontoO", "PontoP", "PontoQ", "PontoR", "PontoS", "PontoT", "PontoU", "PontoV", "PontoW", "PontoX", "PontoY", "PontoZ", "Ponto0", "Ponto1", "Ponto2", "Ponto3", "Ponto4", "Ponto5", "Ponto6", "Ponto7", "Ponto8", "Ponto9" };
     [HideInInspector]
-    public float PontoXo = -7, DeltaX = 14, PontoYo = -4, DeltaY = 8, Passx, PassY;
+    public float Passx, PassY;
+    private float PontoXo = -7, DeltaX = 14, PontoYo = -.5f, DeltaY = 4.5f;
     private int Cleaner = 0;
     public bool Enter;
 
@@ -121,42 +123,37 @@ public class Script : MonoBehaviour
     {
         if (telas == Telas.Menu)
         {
-            Play();//botao play
+            //botao play
+            GameObject lixo = GameObject.FindGameObjectWithTag("Vertices");
+            Destroy(lixo);
+            Enter = true;
         }
         else if (telas == Telas.Grade)
         {
-            if (Input.GetKeyDown(KeyCode.Space))//botao criar
-            {
-                Enter = true;
-                telas = Telas.Arestas;
-            }
+            
+            //if (Input.GetKeyDown(KeyCode.Space))//botao criar
+            //{
+            //    Enter = true;
+            //    telas = Telas.Arestas;
+            //}
             if (Enter)
             {
-                if (Cleaner > 0)
-                {
-                    //   GameObject lixo = GameObject.FindGameObjectWithTag("Vertices");
-                    Debug.Log("foda-se");
-                    // Destroy(lixo);
-                    Cleaner--;
-                }
-                else
-                {
-                    Enter = false;
-                    Passx = (DeltaX / (NumeroColunas - 1));
-                    PassY = (DeltaY / (NumeroLinhas - 1));
-                    for (int i = 0; i < NumeroColunas; i++)
-                        for (int j = 0; j < NumeroLinhas; j++)
-                        {
-                            Vector3 Posicao = new Vector3(PontoXo + (i * Passx), PontoYo + (j * PassY), 0);
-                            SpriteVertices.name = Nomes[(i * NumeroLinhas) + j];
-                            SpriteVertices.GetComponent<MyNameIs>().IndexVert = (i * NumeroLinhas) + j;
-                            Grafo[(i * NumeroLinhas) + j] =
-                            Instantiate(SpriteVertices, Posicao, Quaternion.identity);
-                            Cleaner++;
-                        }
-
-                }
+                Enter = false;
+                Passx = (DeltaX / (NumeroColunas - 1));
+                PassY = (DeltaY / (NumeroLinhas - 1));
+                for (int i = 0; i < NumeroColunas; i++)
+                    for (int j = 0; j < NumeroLinhas; j++)
+                    {
+                        Vector3 Posicao = new Vector3(PontoXo + (i * Passx), PontoYo + (j * PassY), 0);
+                        SpriteVertices.name = Nomes[(i * NumeroLinhas) + j];
+                        SpriteVertices.GetComponent<MyNameIs>().IndexVert = (i * NumeroLinhas) + j;
+                        Grafo[(i * NumeroLinhas) + j] =
+                        Instantiate(SpriteVertices, Posicao, Quaternion.identity);
+                        Cleaner++;
+                    }
             }
+            else telas = Telas.Arestas;
+            
         }
         else if (telas == Telas.Arestas)
         {
@@ -225,12 +222,46 @@ public class Script : MonoBehaviour
                 GetComponent<IA>().CalcularRota(PontoPartida, PontoChegada, Grafo);
             }
         }
+        else if (telas == Telas.Fim) { }
+        Atualiza();
     }
 
+    void Atualiza()
+    {
+        ScrollBar.SetActive(Enter);
+        Criando.SetActive(!Enter);
+        Solucao.SetActive(telas == Telas.Fim);
 
-    void Play()
+    }
+    public void Play()
     {
         telas = Telas.Grade;
+    }
+
+    public void Next()
+    {
+        if (telas == Telas.Arestas)
+                telas = Telas.Rota;
+        else if (telas == Telas.Rota)
+        {
+            if (PontoPartida != null && PontoChegada != null)
+            {
+                    telas = Telas.IA;
+                    ChamaIA = true;
+            }
+        }
+        
+    }
+    public void Back()
+    {
+        if (telas == Telas.Arestas)
+            telas = Telas.Menu;
+        else if (telas == Telas.Rota)
+            telas = Telas.Arestas;
+        else if (telas == Telas.Fim)
+            telas = Telas.Rota;
+        else if (telas == Telas.IA)
+            telas = Telas.Rota;
     }
 
 }

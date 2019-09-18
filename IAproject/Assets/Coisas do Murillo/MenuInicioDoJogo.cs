@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class MenuInicioDoJogo : MonoBehaviour
 {
-    private int LinhasQtd;
-    private int ColunasQtd;
+    private int LinhasQtd=2;
+    private int ColunasQtd=2;
     private string Historia;
     private string NomeCidade;
 
@@ -14,19 +14,10 @@ public class MenuInicioDoJogo : MonoBehaviour
     public Text ColunasQtdText;
     public Text HistoriaText;
     public Text NomeCidadeText;
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
+    public GameObject controle;
     // Update is called once per frame
     void Update()
     {
-        LinhasQtd += 1;
-        ColunasQtd += 2;
         Historia = "Chocolate Meio Amargo"; // Por favor, insira nessa linha programação do tipo Bitão 
         NomeCidade = "Cao Saetano"; // Por favor, insira nessa linha programação do tipo Bitão
 
@@ -34,6 +25,11 @@ public class MenuInicioDoJogo : MonoBehaviour
         UpdateColunas((int)ColunasQtd);
         UpdateHistoria(Historia);
         UpdateCidade(NomeCidade);
+
+        controle.GetComponent<Script>().NumeroLinhas = LinhasQtd;
+        controle.GetComponent<Script>().NumeroColunas = ColunasQtd;
+        
+        
     }
 
     public void UpdateLinhas(int LinhasQtd)
@@ -54,5 +50,14 @@ public class MenuInicioDoJogo : MonoBehaviour
     public void UpdateCidade(string NomeCidade)
     {
         NomeCidadeText.text = NomeCidade;
+    }
+
+    public void ColetarLinhas(float linhas)
+    {
+        LinhasQtd = ((int)(linhas * 4) + 2);
+    }
+    public void ColetarColuna(float colunas)
+    {
+        ColunasQtd = ((int)(colunas * 4) + 2);
     }
 }
