@@ -82,6 +82,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  Casas: 0
 --- !u!114 &3547784633560642305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,8 +99,12 @@ MonoBehaviour:
   telas: 0
   PontoChegada: {fileID: 0}
   PontoPartida: {fileID: 0}
+  ScrollBar: {fileID: 0}
+  Criando: {fileID: 0}
+  Solucao: {fileID: 0}
   NumeroLinhas: 3
   NumeroColunas: 4
+  Passx: 0
   Enter: 0
 --- !u!120 &-8687756791147005322
 LineRenderer:
@@ -118,7 +123,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0ea82d0e29c7fb642a8ba895832fab4a, type: 2}
+  - {fileID: 2100000, guid: fd612436b3a8d8c4d849ce5612d53e6f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
