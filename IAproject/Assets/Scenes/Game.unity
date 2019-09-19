@@ -2770,7 +2770,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da6acc7a6400e1049967decbeb7c7d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TempoLeitura: 3.4
+  TempoLeitura: 1
   Leitor: 0
   Percuso:
   - {fileID: 0}

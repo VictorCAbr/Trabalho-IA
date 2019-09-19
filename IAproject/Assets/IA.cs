@@ -193,7 +193,6 @@ public class IA : MonoBehaviour
                         ZeroUm = false;
                     else {
                         if (MeuGrafo[i] != null)
-                            if(true)
                         {
                             ZeroUm = false;
                             for (int k = 0; k < MeuGrafo[j].GetComponent<MyNameIs>().Vizinho.Length; k++)
