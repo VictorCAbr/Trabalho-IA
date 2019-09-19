@@ -10,7 +10,7 @@ public class Script : MonoBehaviour
     public Telas telas;
     private GameObject Vertice1, Vertice2, HoldVertice;
     public GameObject PontoChegada, PontoPartida;
-    public GameObject ScrollBar,Criando, Solucao, Caminhos, Cidades, Notf, Matriz, DistanciaAndada;
+    public GameObject ScrollBar,Criando, Solucao, Caminhos, Cidades, Notf, Matriz, DistanciaAndada, MAxAresta;
     public bool NaoChega;
     private GameObject[] Grafo = new GameObject[36];
     private GameObject[] Caminho = new GameObject[36];
@@ -20,6 +20,10 @@ public class Script : MonoBehaviour
     public int NumeroLinhas;
     [Range(2, 6)]
     public int NumeroColunas;
+    public int NumMaxAresta;
+    public int NumAresta;
+    public int NumMaxMax;
+    public int NumMinMax;
     private string[] Nomes = { "PontoA", "PontoB", "PontoC", "PontoD", "PontoE", "PontoF", "PontoG", "PontoH", "PontoI", "PontoJ", "PontoK", "PontoL", "PontoM", "PontoN", "PontoO", "PontoP", "PontoQ", "PontoR", "PontoS", "PontoT", "PontoU", "PontoV", "PontoW", "PontoX", "PontoY", "PontoZ", "Ponto0", "Ponto1", "Ponto2", "Ponto3", "Ponto4", "Ponto5", "Ponto6", "Ponto7", "Ponto8", "Ponto9" };
     [HideInInspector]
     public float Passx, PassY;
@@ -125,6 +129,9 @@ public class Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        NumMaxMax = (NumeroColunas - 1 * NumeroLinhas) + (NumeroColunas * NumeroLinhas - 1) + (NumeroColunas - 1 * NumeroLinhas - 1) * 2;
+        NumMinMax = (2 - 1 * 2) + (2 * 2 - 1) + (2 - 1 * 2 - 1) * 2;
+
         if (telas == Telas.Menu)
         {
             //botao play
