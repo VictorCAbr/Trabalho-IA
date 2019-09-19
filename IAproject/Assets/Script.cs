@@ -10,7 +10,8 @@ public class Script : MonoBehaviour
     public Telas telas;
     private GameObject Vertice1, Vertice2, HoldVertice;
     public GameObject PontoChegada, PontoPartida;
-    public GameObject ScrollBar,Criando, Solucao;
+    public GameObject ScrollBar,Criando, Solucao, Caminhos, Cidades, Notf, Matriz, DistanciaAndada;
+    public bool NaoChega;
     private GameObject[] Grafo = new GameObject[36];
     private GameObject[] Caminho = new GameObject[36];
     private Vector3[] Estradas = new Vector3[36];
@@ -30,6 +31,8 @@ public class Script : MonoBehaviour
     private Color vcor;
     private int coutg;
     private bool ChamaIA;
+    private enum JaneMatriz { Nenhum,MAtriz,Rota}
+    private JaneMatriz janeMatriz;
 
     public void ClickMe(GameObject vclick)
     {
@@ -53,10 +56,11 @@ public class Script : MonoBehaviour
                 PontoPartida = null;
             else if (PontoChegada == vclick)
                 PontoChegada = null;
-            else if (PontoChegada == null)
-                PontoChegada = vclick;
+            
             else            if (PontoPartida == null)
                 PontoPartida = vclick;
+            else if (PontoChegada == null)
+                PontoChegada = vclick;
         }
 
     }
@@ -130,7 +134,7 @@ public class Script : MonoBehaviour
         }
         else if (telas == Telas.Grade)
         {
-            
+
             //if (Input.GetKeyDown(KeyCode.Space))//botao criar
             //{
             //    Enter = true;
@@ -153,7 +157,7 @@ public class Script : MonoBehaviour
                     }
             }
             else telas = Telas.Arestas;
-            
+
         }
         else if (telas == Telas.Arestas)
         {
@@ -216,13 +220,19 @@ public class Script : MonoBehaviour
         }
         else if (telas == Telas.IA)
         {
+            Debug.Log(ChamaIA);
             if (ChamaIA)
             {
                 ChamaIA = false;
                 GetComponent<IA>().CalcularRota(PontoPartida, PontoChegada, Grafo);
             }
         }
-        else if (telas == Telas.Fim) { }
+        else if (telas == Telas.Fim)
+        {
+            for (int i = 0; i < Grafo.Length; i++)
+                if (Grafo[i]!=null)
+                Grafo[i].GetComponent<SpriteRenderer>().color = Color.white;
+        }
         Atualiza();
     }
 
@@ -231,7 +241,13 @@ public class Script : MonoBehaviour
         ScrollBar.SetActive(Enter);
         Criando.SetActive(!Enter);
         Solucao.SetActive(telas == Telas.Fim);
-
+        Caminhos.SetActive(telas == Telas.Arestas);
+        Cidades.SetActive(telas == Telas.Rota);
+        Notf.SetActive(NaoChega&& telas == Telas.IA);
+        if (telas != Telas.Fim)
+            janeMatriz = JaneMatriz.Nenhum;
+        Matriz.SetActive(janeMatriz == JaneMatriz.MAtriz);
+        DistanciaAndada.SetActive(janeMatriz == JaneMatriz.Rota);
     }
     public void Play()
     {
@@ -249,6 +265,15 @@ public class Script : MonoBehaviour
                     telas = Telas.IA;
                     ChamaIA = true;
             }
+        }
+        else if(telas==Telas.Fim)
+        {
+            if (janeMatriz == JaneMatriz.Nenhum)
+                janeMatriz = JaneMatriz.MAtriz;
+            else if (janeMatriz == JaneMatriz.MAtriz)
+                janeMatriz = JaneMatriz.Rota;
+            else if (janeMatriz == JaneMatriz.Rota)
+                janeMatriz = JaneMatriz.Nenhum;
         }
         
     }

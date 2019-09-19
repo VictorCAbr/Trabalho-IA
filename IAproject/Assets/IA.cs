@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class IA : MonoBehaviour
 {
     public GameObject[] MeuGrafo = new GameObject[36];
-    public bool NotFound=false;
-    public bool Trabalhando;
-    public GameObject[] FiladeBusca = new GameObject[36];
+    private bool NotFound=false;
+    private bool Trabalhando;
     public GameObject[] Caminho = new GameObject[36];
     public GameObject[] Filhos = new GameObject[8];
     private Vector3[] Estradas = new Vector3[36];
@@ -24,13 +24,24 @@ public class IA : MonoBehaviour
     private Color c;
     private float largux;
     private float larguy;
+    public Text MatrizTxt;
+    public Text DistanciaTxt;
+    private string stgMatriz;
+    private string stgDistancia;
 
 
-    // Update is called once per frame
+
+    private int NumMax;
+    private float TT=0.25f, tt;
+    private string[] Nomes = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+
+
+
     void Update()
     {
-        if (PontoBusca != null)
-            transform.position = PontoBusca.transform.position;
+        CriarMatriz();
+        GetComponent<Script>().NaoChega = NotFound;
+
         if (PontoPartida != null && PontoChegada != null && GetComponent<Script>().telas == Script.Telas.IA )
         {
             #region ia
@@ -40,9 +51,10 @@ public class IA : MonoBehaviour
                 if (PontoBusca != null)
                 {
                     int mf = 0;
-                    for (mf = 0; mf < Filhos.Length; mf++)
+                    for (mf = 0; mf < Filhos.Length; mf++) //limpar os filhos do ponto de busca
                         Filhos[mf] = null;
                     mf = 0;
+                    #region Achar os filhos do PONTO DE BUSCA
                     for (int ig = 0; ig < PontoBusca.GetComponent<MyNameIs>().IndexVert; ig++)
                         if (MeuGrafo[ig] != null)
                         {
@@ -63,16 +75,17 @@ public class IA : MonoBehaviour
                                 mf++;
                             Filhos[mf] = PontoBusca.GetComponent<MyNameIs>().Vizinho[kv];
                         }
-                    PontoNext = null;
-                    MenorDistancia = CalcularDistancia(PontoChegada, PontoPartida) * 2;
-                    MenorMahattan = CalcularManhattan(PontoChegada, PontoPartida);
-                    MenorPeso = CalcularPeso(PontoChegada, PontoPartida);
+                    #endregion
+                    #region Atulaizar 'COR' (PRETO/CINZA) do Ponto de busca
                     PontoBusca.GetComponent<MyNameIs>().busca = MyNameIs.Busca.Preto;
                     for (mf = 0; mf < Filhos.Length; mf++)
                         if (Filhos[mf] != null)
                             if (Filhos[mf].GetComponent<MyNameIs>().busca == MyNameIs.Busca.Branco)
                                 PontoBusca.GetComponent<MyNameIs>().busca = MyNameIs.Busca.Cinza;
-
+                    #endregion
+                    #region Achar o mais PROXIMO DA CHEGADA
+                    PontoNext = null;
+                    MenorDistancia = CalcularDistancia(PontoChegada, PontoPartida) * 2;
                     for (mf = 0; mf < Filhos.Length; mf++)
                         if (Filhos[mf] != null)
                             if ((PontoBusca.GetComponent<MyNameIs>().busca == MyNameIs.Busca.Cinza
@@ -83,26 +96,30 @@ public class IA : MonoBehaviour
                                     MenorDistancia = CalcularDistancia(PontoChegada, Filhos[mf]);
                                     PontoNext = Filhos[mf];
                                 }
-                    if (true)
-                        Debug.Log(PontoNext == null);
-                        NotFound = (PontoNext == null);
-                    Colorir();
+                    NotFound = (PontoNext == null);
+                    #endregion
+                    #region Define quem é o PAI na ARVORE
                     if (PontoNext != null)
-                    if (PontoNext.GetComponent<MyNameIs>().MeuPai == null)
-                        PontoNext.GetComponent<MyNameIs>().MeuPai = PontoBusca;
-                  //  Debug.Log("lçkjhbgfcx");
+                        if (PontoNext.GetComponent<MyNameIs>().MeuPai == null)
+                            PontoNext.GetComponent<MyNameIs>().MeuPai = PontoBusca;
+                    #endregion
+                    Colorir();
                     PontoAnterior = PontoBusca;
                     PontoBusca = PontoNext;
                 }
             }
-            else 
+            else
             {
-                //Debug.Log("insira uma matriz");
-                AddCasaNoCaminho(PontoBusca);
+                #region Finaliza e atualiza o resultado
+                if (PontoBusca != null)
+                    AddCasaNoCaminho(PontoBusca);
+                if (!NotFound)
+                    GetComponent<Script>().telas = Script.Telas.Fim;
+                CriarMatriz();
+                PontoBusca = PontoPartida;
+                #endregion
 
             }
-            if (NotFound)
-                Debug.Log("NotFound");
             #endregion
             int casas = 0;
             for (int i = 0; i < Caminho.Length; i++)
@@ -116,7 +133,8 @@ public class IA : MonoBehaviour
             GetComponent<LineRenderer>().positionCount = casas;
             GetComponent<LineRenderer>().SetPositions(Estradas);
         }
-        else    GetComponent<LineRenderer>().positionCount = 0;
+        else if(GetComponent<Script>().telas !=Script.Telas.Fim)
+            GetComponent<LineRenderer>().positionCount = 0;
         
     }
     private void AddCasaNoCaminho(GameObject PontoNew)
@@ -135,8 +153,92 @@ public class IA : MonoBehaviour
             PercorridaManhattan += CalcularManhattan(Caminho[i], Caminho[i - 1]);
             PercorridaPeso += CalcularPeso(Caminho[i], Caminho[i - 1]);
         }
+        CriarTxtDistancia();
     }
+    private void CriarMatriz()
+    {
 
+        stgMatriz = "    ";
+        if (MeuGrafo[0] != null)
+            NumMax = GetComponent<Script>().NumeroColunas * GetComponent<Script>().NumeroLinhas;
+        else
+        {
+            tt += Time.deltaTime;
+            if (tt > TT)
+            {
+                NumMax++;
+                tt = 0;
+            }
+            if (NumMax > 20)
+                NumMax = 0;
+            // NumMax = 16;
+        }
+        for (int i = 0; i < NumMax; i++)
+            stgMatriz += " | " + Nomes[i] + " |";
+        // stgMatriz += "\n";
+        for (int j = 0; j < NumMax; j++)
+        {
+            stgMatriz += "\n";
+            stgMatriz += "" + Nomes[j] + " ";
+            for (int i = 0; i < NumMax; i++)
+            {
+                stgMatriz += " | ";
+                if (i < j)
+                    stgMatriz += " _";
+                else
+                {
+                    bool ZeroUm = ((i + j) % 2 == 1);
+
+                    if (i == j)
+                        ZeroUm = false;
+                    else {
+                        if (MeuGrafo[i] != null)
+                            if(true)
+                        {
+                            ZeroUm = false;
+                            for (int k = 0; k < MeuGrafo[j].GetComponent<MyNameIs>().Vizinho.Length; k++)
+                                if (MeuGrafo[j].GetComponent<MyNameIs>().Vizinho[k] == MeuGrafo[i])
+                                    ZeroUm = true;
+                        }
+                    }
+
+                    if (ZeroUm) stgMatriz += " ";
+                    stgMatriz += ZeroUm ? 1 : 0;
+                }
+                stgMatriz += " |";
+            }
+
+        }
+        MatrizTxt.text = stgMatriz;
+
+
+    }
+    private void CriarTxtDistancia()
+    {
+        float Dm = 0;
+        if (PontoChegada != null && PontoPartida != null)
+            Dm = CalcularManhattan(PontoPartida, PontoChegada);
+        stgDistancia = "Algoritmo usado:   A*  com auxilio do Depth-First Search.\n\n";
+        stgDistancia += "Distancia percorrida:   " + PercorridaDistancia + ".\n\n";
+        stgDistancia += "Distancia Manhattan do Ponto Inicial ao Ponto Final:   " + Dm + ".\n\n";
+        stgDistancia += "Cidades percorridas:";
+        for (int i = 0; i < Caminho.Length; i++)
+            if (Caminho[i] != null)
+            {
+                if (i != 0)
+                {
+                    if (Caminho[i + 1] == null)
+                        stgDistancia += "    e ";
+                    else
+                        stgDistancia += " , ";
+                }
+                if (i % 10 == 0)
+                    stgDistancia += "\n\n";
+                stgDistancia += "   " + GameObject.Find("Canvas").GetComponent<MenuInicioDoJogo>().AsCidades[Caminho[i].GetComponent<MyNameIs>().IndexVert];
+            }
+        stgDistancia += ".\n\n";
+        DistanciaTxt.text = stgDistancia;
+    }
     public void CalcularRota(GameObject pfim, GameObject pcomeca, GameObject[] grafo)
     {
         largux = GetComponent<Script>().Passx;
@@ -146,7 +248,6 @@ public class IA : MonoBehaviour
         MeuGrafo = grafo;
         PontoBusca = PontoPartida;
         NotFound = false;
-       PontoAnterior = null;
         Casas = 0;
         PercorridaDistancia = 0;
         PercorridaManhattan = 0;
