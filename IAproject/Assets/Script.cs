@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEditor;
 
 public class Script : MonoBehaviour
@@ -23,10 +24,13 @@ public class Script : MonoBehaviour
     private string[] Nomes = { "PontoA", "PontoB", "PontoC", "PontoD", "PontoE", "PontoF", "PontoG", "PontoH", "PontoI", "PontoJ", "PontoK", "PontoL", "PontoM", "PontoN", "PontoO", "PontoP", "PontoQ", "PontoR", "PontoS", "PontoT", "PontoU", "PontoV", "PontoW", "PontoX", "PontoY", "PontoZ", "Ponto0", "Ponto1", "Ponto2", "Ponto3", "Ponto4", "Ponto5", "Ponto6", "Ponto7", "Ponto8", "Ponto9" };
     [HideInInspector]
     public float Passx, PassY;
-    private float PontoXo = -7, DeltaX = 14, PontoYo = -.5f, DeltaY = 4.5f;
+    private float PontoXo = -5, DeltaX = 10, PontoYo = -.5f, DeltaY = 4.5f;
     private int Cleaner = 0;
     public bool Enter;
-
+    public int NUmeroMaxAresta;
+    public int NumeroAresta;
+    public Text ArestaTxt;
+    private string stgAresta;
     private Color vcor;
     private int coutg;
     private bool ChamaIA;
@@ -35,9 +39,7 @@ public class Script : MonoBehaviour
 
     public void ClickMe(GameObject vclick)
     {
-        if (telas == Telas.Menu) { }
-        else if (telas == Telas.Grade) { }
-        else if (telas == Telas.Arestas)
+        if (telas == Telas.Arestas)
         {
             if (HoldVertice == null)
             {
@@ -45,24 +47,24 @@ public class Script : MonoBehaviour
                 Vertice1 = PrimeiroPonto(HoldVertice);
             }
             else
-            {
                 HoldVertice = SegundoPonto(vclick);
-            }
         }
         else if (telas == Telas.Rota)
         {
+            #region Pontos de INICIO E FIM
             if (PontoPartida == vclick)
                 PontoPartida = null;
             else if (PontoChegada == vclick)
                 PontoChegada = null;
-            
-            else            if (PontoPartida == null)
+            else if (PontoPartida == null)
                 PontoPartida = vclick;
             else if (PontoChegada == null)
                 PontoChegada = vclick;
+            #endregion
         }
 
     }
+    #region Criar ARESTA
     GameObject PrimeiroPonto(GameObject p1)
     {
         vcor = p1.GetComponent<SpriteRenderer>().color;
@@ -75,8 +77,7 @@ public class Script : MonoBehaviour
         float DistX = dx * dx;
         float dy = (Vertice1.transform.position.y - p2.transform.position.y) / PassY;
         float DistY = dy * dy;
-
-        if (DistX <= 1 && DistY <= 1 && (DistX != 0 || DistY != 0))
+        if ((DistX <= 1 && DistY <= 1 && (DistX != 0 || DistY != 0)))
         {
             p2.GetComponent<SpriteRenderer>().color = Color.red;
             Vertice1.GetComponent<SpriteRenderer>().color = Color.red;
@@ -86,9 +87,7 @@ public class Script : MonoBehaviour
                 AddParentesco(Vertice1, p2);
         }
         else
-        {
             Vertice1.GetComponent<SpriteRenderer>().color = vcor;
-        }
         return null;
     }
     void AddParentesco(GameObject nwpai, GameObject nwfilho)
@@ -105,39 +104,37 @@ public class Script : MonoBehaviour
             }
             i++;
         }
-        if (!brak)
+        if ((!brak)&& (NumeroAresta < NUmeroMaxAresta))
+        {
             nwpai.GetComponent<MyNameIs>().Vizinho[i] = nwfilho;
+            NumeroAresta++;
+        }
     }
     void ApagarParentesco(GameObject nwpai, GameObject nwfilho)
     {
+        NumeroAresta--;
         int i = 0;
         while (i < nwpai.GetComponent<MyNameIs>().Vizinho.Length && nwpai.GetComponent<MyNameIs>().Vizinho[i] != nwfilho)
             i++;
-
         while (i < nwpai.GetComponent<MyNameIs>().Vizinho.Length && nwpai.GetComponent<MyNameIs>().Vizinho[i] != null)
         {
             nwpai.GetComponent<MyNameIs>().Vizinho[i] = nwpai.GetComponent<MyNameIs>().Vizinho[i + 1];
             i++;
         }
     }
-
+    #endregion
     // Update is called once per frame
     void Update()
     {
         if (telas == Telas.Menu)
         {
+            NumeroAresta = 0;
             GameObject lixo = GameObject.FindGameObjectWithTag("Vertices");
             Destroy(lixo);
             Enter = true;
         }
         else if (telas == Telas.Grade)
         {
-
-            //if (Input.GetKeyDown(KeyCode.Space))//botao criar
-            //{
-            //    Enter = true;
-            //    telas = Telas.Arestas;
-            //}
             if (Enter)
             {
                 Enter = false;
@@ -155,10 +152,10 @@ public class Script : MonoBehaviour
                     }
             }
             else telas = Telas.Arestas;
-
         }
         else if (telas == Telas.Arestas)
         {
+            #region Criar VERTICES
             for (int i = 0; i < NumeroColunas * NumeroLinhas; i++)
             {
                 bool TaSozinho = true;
@@ -185,16 +182,13 @@ public class Script : MonoBehaviour
                 if (TaSozinho && Grafo[i].GetComponent<SpriteRenderer>().color != Color.black)
                     Grafo[i].GetComponent<SpriteRenderer>().color = Color.white;
             }
-
+            #endregion
             for (int p = 0; p < NumeroColunas * NumeroLinhas; p++)
             {
                 coutg = p;
                 if (Grafo[p].GetComponent<SpriteRenderer>().color != Color.red)
                     break;
             }
-
-            if (Input.GetKeyDown(KeyCode.Space))//botao criar
-                telas = Telas.Rota;
         }
         else if (telas == Telas.Rota)
         {
@@ -205,19 +199,9 @@ public class Script : MonoBehaviour
                     PontoPartida.GetComponent<SpriteRenderer>().color = Color.green;
                 else
                     Grafo[i].GetComponent<SpriteRenderer>().color = Color.red;
-
-            if (PontoPartida != null && PontoChegada != null)
-            {
-                if (Input.GetKeyDown(KeyCode.Space))
-                {//botao criar
-                    telas = Telas.IA;
-                    ChamaIA = true;
-                }
-            }
         }
         else if (telas == Telas.IA)
         {
-            Debug.Log(ChamaIA);
             if (ChamaIA)
             {
                 ChamaIA = false;
@@ -245,6 +229,8 @@ public class Script : MonoBehaviour
             janeMatriz = JaneMatriz.Nenhum;
         Matriz.SetActive(janeMatriz == JaneMatriz.MAtriz);
         DistanciaAndada.SetActive(janeMatriz == JaneMatriz.Rota);
+        stgAresta = "para começar\nColoque os caminhos.\nNumero de arestas  " + NumeroAresta + ". Resta(m):  "+(NUmeroMaxAresta-NumeroAresta);
+        ArestaTxt.text = stgAresta;
     }
     public void Play()
     {
@@ -285,6 +271,5 @@ public class Script : MonoBehaviour
         else if (telas == Telas.IA)
             telas = Telas.Rota;
     }
-
 }
 

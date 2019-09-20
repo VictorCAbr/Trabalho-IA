@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76dc937fc07612945991489e53828489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IndexVert: 11
+  IndexVert: 5
   Posi: {x: 0, y: 0, z: 0}
   MeuPai: {fileID: 0}
   Vizinho:

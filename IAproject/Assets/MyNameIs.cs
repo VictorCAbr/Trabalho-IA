@@ -42,15 +42,6 @@ public class MyNameIs : MonoBehaviour
         }
         lr.SetPositions(positions);
 
-        //if (GetComponent<SpriteRenderer>().color != Color.yellow && GetComponent<SpriteRenderer>().color != Color.magenta)
-        //    c = GetComponent<SpriteRenderer>().color;
-
-        //if (busca == Busca.Branco)
-        //    GetComponent<SpriteRenderer>().color = c;
-        //else if (busca == Busca.Preto)
-        //    GetComponent<SpriteRenderer>().color = Color.yellow;
-        //else if (busca == Busca.Cinza)
-        //    GetComponent<SpriteRenderer>().color = Color.white;
 
 
     }
