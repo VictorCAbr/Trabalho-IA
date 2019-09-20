@@ -2849,7 +2849,7 @@ MonoBehaviour:
   LinhasQtd: 2
   ColunasQtd: 2
   ArestaQtd: 2000
-  TempoLeitura: 1
+  TempoLeitura: 2
   Leitor: 0
   Percuso:
   - {fileID: 0}
